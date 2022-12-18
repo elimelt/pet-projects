@@ -1,69 +1,38 @@
-const Header = (props) => {
-  console.log(props)
-  return (
-    <>
-      <h1>{props.name}</h1>
-    </>
-  )
+import { useState } from 'react'
+
+
+const Display = ({ counter }) => <div>{counter}</div>
+
+const Button = ({ onClick, name}) => 
+  <button onClick={onClick}> {name}</button>
+
+const History = (props) => {
+  if (props.allClicks.length === 0) return <div>push a button</div>
+  else return <div>history: {props.allClicks.join(' ')}</div> 
 }
 
-const Content = (props) => {
-  console.log(props)
-  return (
-    <>
-      <Part part={props.course.parts[0]} />
-      <Part part={props.course.parts[1]}  />
-      <Part part={props.course.parts[2]}  />
-    </>
-  )
-}
-
-const Part = (props) => {
-  console.log(props)
-  return(
-    <>
-      <p>
-        {props.part.name} {props.part.excercises}
-      </p>
-    </>
-  )
-
-}
-
-const Total = (props) => {
-  return (
-    <>
-      <p> Total exercises: 
-        {props.course.parts[0].excercises + props.course.parts[1].excercises + props.course.parts[2].excercises}
-      </p>
-    </>
-  )
-
-}
 const App = () => {
-  const course = {
+  const [left, setLeft] = useState(0)
+  const [right, setRight] = useState(0)
+  const [allClicks, setAll] = useState([])
 
-    name: 'Learning React',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        excercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        excercises: 7
-      },
-      { 
-        name:'State of a component',
-        excercises: 14
-      }
-    ]
+  const handleLeftClicks = () => {
+    setAll(allClicks.concat('L'))
+    setLeft(left + 1)
   }
+
+  const handleRightClicks = () => {
+    setAll(allClicks.concat('R'))
+    setRight(right + 1)
+  }
+
   return (
     <div>
-      <Header name={course.name}/>
-      <Content course={course}/>
-      <Total course={course}/>
+      {left}
+      <Button onClick={handleLeftClicks} name='left'/>
+      <Button onClick={handleRightClicks} name='right'/>
+      {right}
+      <History allClicks={allClicks}/>
     </div>
   )
 }
