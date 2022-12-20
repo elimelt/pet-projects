@@ -1,5 +1,7 @@
 import { useState } from 'react'
-
+import ExampleArea from './components/ExampleArea'
+import  TypingArea  from './components/TypingArea'
+import ValidationArea from './components/ValidationArea'
 
 const Button = ({ text, handleClick}) => {
   return(<><button onClick={handleClick}>{text}</button></>)
@@ -19,6 +21,7 @@ const VoteData = ({ score }) => {
 
 const App = () => {
   const anecdotes = [
+    'public static void main(String[] args) {}',
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
     'The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
@@ -37,6 +40,10 @@ const App = () => {
     accumulator[curr] = 0
     return accumulator
   }, {}))
+
+  const [currText, setCurrText] = useState('initial state')
+
+  
 
   const newQuote = () => {
     const newQuote = anecdotes[rand(anecdotes.length)]
@@ -60,17 +67,32 @@ const App = () => {
     setBest(best)
   }
 
+
+
   return (
     <div>
-      <h1>Quote of the day</h1>
-      <Quote selected={selected}/>
-      <br/>
-      <VoteData score={score}/>
-      <Button text="new quote" handleClick={newQuote}/>
-      <Button text="vote for this quote" handleClick={voteCurr}/>
-      <br/>
-      <h1>Most popular quote</h1>
-      <Quote selected={best}/>
+      <div>
+        <div>
+          <h1>Quote of the day</h1>
+          <Quote selected={selected}/>
+          <br/>
+          <VoteData score={score}/>
+          <Button text="new quote" handleClick={newQuote}/>
+          <Button text="vote for this quote" handleClick={voteCurr}/>
+          <br/>
+          <h1>Most popular quote</h1>
+          <Quote selected={best}/>
+        </div>
+      </div>
+      <br></br>
+      <br></br>
+      <br></br>
+      <h1>Syntext</h1>
+      <div>
+        <ExampleArea currQuote={selected}/>
+        <TypingArea currText={currText} setCurrText={setCurrText}/>
+        <ValidationArea currQuote={selected} currText={currText}/>
+      </div>
     </div>
   )
 }

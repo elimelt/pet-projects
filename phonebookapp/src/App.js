@@ -3,10 +3,6 @@ import Entries from './components/Entries'
 import Search from './components/Search'
 import AddEntry from './components/AddEntry'
 
-
-
-
-
 const App = (props) => {
     const [persons, setPersons] = useState(props.persons) 
     const [newName, setNewName] = useState('first name')
