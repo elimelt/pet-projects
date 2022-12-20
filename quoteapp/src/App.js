@@ -87,6 +87,7 @@ const App = () => {
       <br></br>
       <br></br>
       <br></br>
+      <br></br>
       <h1>Syntext</h1>
       <div>
         <ExampleArea currQuote={selected}/>
