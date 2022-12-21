@@ -1,5 +1,5 @@
 const Entries = (props) => {
-    console.log(props)
+
     const {persons} = props
     return (
         <div>
