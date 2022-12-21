@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios'
+import { useState, useEffect } from 'react'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+    const [display, setDisplay] = useState()
+    
+    const URL_PLEASE = 'https://www.bing.com/search?q=reddit+how+to+packet+sniff+using+wireshark&FORM=AWRE'
+    
+    
+    
+    useEffect(() => {
+        axios
+            .get(URL_PLEASE)
+            .then(response => {
+                console.log(response.data)
+                //setDisplay(findBottom(response.data))
+            })
+    })
+
+
+    const findBottom = (object) => {
+        let result = []
+        for (let property in object){
+            if (typeof(object) === typeof(property)) findBottom(property)
+            else result.concat(property)
+        }
+        return result
+    }
+
+    return (
+        <div>
+            {display}
+        </div>
+    )
 }
-
-export default App;
+export default App
