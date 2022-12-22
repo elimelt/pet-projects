@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 const App = () => {
     const [display, setDisplay] = useState()
     
-    const URL_PLEASE = 'https://www.bing.com/search?q=reddit+how+to+packet+sniff+using+wireshark&FORM=AWRE'
+    const URL_PLEASE = ''
     
     
     
