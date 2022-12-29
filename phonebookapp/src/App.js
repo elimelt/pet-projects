@@ -2,29 +2,67 @@ import { useState, useEffect } from 'react'
 import Entries from './components/Entries'
 import Search from './components/Search'
 import AddEntry from './components/AddEntry'
-import axios from 'axios'
+import personsService from './services/persons'
+
 
 const App = () => {
     const [persons, setPersons] = useState([]) 
     const [newName, setNewName] = useState('first name')
     const [newNumber, setNewNumber] = useState('(xxx) xxx-xxxx')
     const [currPersons, setNewCurrPersons] = useState([])
+    const [nextId, setNextId] = useState(1)
   
     useEffect(() => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
+        personsService
+            .getAll()
+            .then(people => { 
+                setPersons(people)
+                let maxID = 0
+                people.forEach(person => {
+                    if (person.id > maxID) maxID = person.id
+                })
+                setNextId(maxID + 1)
             })
+    
     }, [])
 
     const addEntry = (event) => {
         event.preventDefault()
-        if (persons.some((person) => person.name === newName || persons.number === newNumber)) 
+        if (persons.number === newNumber) 
             alert(`record for ${newName} or ${newNumber} is already in the phonebook`)
-        else setPersons(persons.concat({name: newName, number: newNumber, id: persons.length + 1}))
+        else if (persons.some((person) => person.name === newName)) {
+            if (window.confirm(`${newName} is already in the phone book. Replace number?`)){
+                const i = persons.findIndex(person => person.name === newName)
+                personsService
+                    .update(persons[i].id, {name: newName, number: newNumber, id: nextId})
+                    .then(newPerson => { 
+                        console.log('new person',newPerson)
+                        const newPersons = persons.map((person, index) => {
+                            return (i === index) ? newPerson : person   
+                        })
+                        newPersons[i] = newPerson
+                        console.log('p', persons)
+                        console.log('new persons', newPersons)
+                        if (Object.keys(persons).length !== 0 ) setPersons(newPersons)
+                    })
+                personsService.getAll().then(people => setPersons(people))
+            }
+        }else {
+            const newObj = {
+                name: newName, 
+                number: newNumber, 
+                id: nextId
+            }
+            //setPersons(persons.concat(newObj))
+            personsService
+                .create(newObj)
+                .then(newEntry => 
+                    setPersons(persons.concat(newObj)
+               ))
+        }
         setNewName('')
         setNewNumber('')
+        setNextId(nextId + 1)
     }
 
     const inputNameChange = (event) => {
@@ -41,6 +79,17 @@ const App = () => {
         setNewCurrPersons(filtered)
     }
 
+    const deleteEntry = id => {
+        const p = persons.find(person => person.id === id)
+        if (window.confirm(`are you sure you want to delete ${p.name}`)){
+            //console.log('pre', persons)
+            const newPersons = persons.filter(person => person.id !== id)
+            //console.log('post', newPersons)
+            personsService.deletePerson(id)
+            setPersons(newPersons)
+        }
+    }
+
     return (
       <div>
         <h1>Phonebook</h1>
@@ -52,7 +101,7 @@ const App = () => {
             inputNameChange={inputNameChange}
             inputNumberChange={inputNumberChange}
         />
-        <Entries persons={persons}/>
+        <Entries persons={persons} handleDelete={deleteEntry}/>
       </div>
     )
   }
