@@ -3,6 +3,8 @@ import Entries from './components/Entries'
 import Search from './components/Search'
 import AddEntry from './components/AddEntry'
 import personsService from './services/persons'
+import Notification from './components/Notification'
+import './index.css'
 
 
 const App = () => {
@@ -11,6 +13,7 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('(xxx) xxx-xxxx')
     const [currPersons, setNewCurrPersons] = useState([])
     const [nextId, setNextId] = useState(1)
+    const [currMessage, setCurrMessage] = useState(null)
   
     useEffect(() => {
         personsService
@@ -23,7 +26,6 @@ const App = () => {
                 })
                 setNextId(maxID + 1)
             })
-    
     }, [])
 
     const addEntry = (event) => {
@@ -44,9 +46,15 @@ const App = () => {
                         console.log('p', persons)
                         console.log('new persons', newPersons)
                         if (Object.keys(persons).length !== 0 ) setPersons(newPersons)
+                        setCurrMessage({text: 'success', messageClass: 'success'})
+                        setTimeout(() => setCurrMessage(null), 1000)
+                    }).catch(err => {
+                        setCurrMessage({text: 'error name already removed', messageClass: 'error'})
+                        setTimeout(() => setCurrMessage(null), 1000)
                     })
                 personsService.getAll().then(people => setPersons(people))
             }
+            
         }else {
             const newObj = {
                 name: newName, 
@@ -59,10 +67,13 @@ const App = () => {
                 .then(newEntry => 
                     setPersons(persons.concat(newObj)
                ))
+               setCurrMessage({text: 'success', messageClass: 'success'})
+            setTimeout(() => setCurrMessage(null), 1000)
         }
         setNewName('')
         setNewNumber('')
         setNextId(nextId + 1)
+        
     }
 
     const inputNameChange = (event) => {
@@ -92,6 +103,7 @@ const App = () => {
 
     return (
       <div>
+        <Notification message={currMessage}/>
         <h1>Phonebook</h1>
         <Search searchChange={searchChange}/>
         <AddEntry 
