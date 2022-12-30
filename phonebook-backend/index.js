@@ -1,7 +1,14 @@
 const express = require("express")
+const morgan = require('morgan')
+
 const app = express()
 
+morgan.token('content', function getId (req) {
+    return JSON.stringify(req.body)
+})
+const format = ':method :url :status :total-time[2] :content'
 app.use(express.json())
+app.use(morgan(format))
 
 let persons = [
     { 
@@ -61,8 +68,20 @@ const generateId = () => Math.floor(Math.random()*10000)
 
 app.post('/api/persons', (req, res) => {
     const body = req.body
+    
 
-    if (!body) return res.status(400).json({error:'content missing'})
+    if (!body) 
+        return res.status(400).json({error:'content missing'})
+    if (!body.name || !body.number) 
+        return res.status(400).json({error: 'missing info'})
+    
+    let isUnique = true    
+    persons.forEach(person => {
+        if (person.name === body.name) isUnique = false
+    })
+
+    if (!isUnique) 
+        return res.status(400).json({error: `${body.name} already in phonebook`})
 
     const person = {
         id: generateId(),
@@ -73,6 +92,16 @@ app.post('/api/persons', (req, res) => {
     persons = persons.concat(person)
     res.json(person)
 })
+
+
+
+const unknownEndpoint = (req, res) => {
+    res.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+
 
 PORT = 3001
 app.listen(PORT, () => {
